@@ -19,4 +19,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(store)
 // 导入全局守卫
 import '@/permissios.js'
+// nprogress 样式
+import 'nprogress/nprogress.css'
 app.mount('#app')

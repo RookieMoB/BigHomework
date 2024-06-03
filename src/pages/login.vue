@@ -41,8 +41,10 @@
 </template>
 
 <script setup>
-  import { ref, reactive } from 'vue'
-  import { login } from '@/api/manager'
+  import { ref, reactive, 
+    onMounted/* 页面渲染完成之后调用 */, 
+    onBeforeUnmount/* 页面卸载之前调用 */ 
+  } from 'vue'
   import { toast } from '@/composables/util'
   import { useRouter } from 'vue-router'
   import { useStore } from 'vuex'
@@ -82,25 +84,38 @@
       // 登录成功
       loading.value = true
       // 发起登录请求
-      login(form.username, form.password)
-      .then(res => {
+      store.dispatch('login', form).then(res => {
         toast(null, '登录成功')
-
-        setToken(res.token)  // 存储 token
-
         router.push('/')      // 跳转到后台首页
-        
         // 使用响应拦截器后
-        console.log(res);     // console.log(res.data.data.token);
+        // console.log(res);     // console.log(res.data.data.token);
       })
       .finally(() => {
         loading.value = false
       })
     })
   }
+
+  // 监听回车事件
+  function onKeyUp(e) {
+    if (e.keyCode === 13) {
+      onSubmit()
+    }
+  }
+
+  // 添加键盘监听事件
+  onMounted(() => {
+    document.addEventListener('keyup', onKeyUp)
+  })
+
+  // 移出键盘事件
+  onBeforeUnmount(() => {
+    document.removeEventListener('keyup', onKeyUp)
+  })
+
 </script>
 
-<!-- lang='postcss'  可以消除样式的警告 -->
+<!-- lang='postcss'  可以消除样式的警告 , scoped —— 作用域-->
 <style scoped>
 .login-container {
   @apply bg-sky-500 rounded-full shadow-2xl shadow-gray-500;
